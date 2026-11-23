@@ -20,7 +20,7 @@ Build a reusable skill directory at `.agents/skills/fady-autonomous-engineering/
 8. Route autonomous technical decisions without approval; only escalate real business alternatives, destructive/irreversible operations, security/production impact, external charges and missing permissions. Present <=3 clear choices, recommend one, proceed with independent safe work.
 9. Use risk-proportional QA/security and authorized, non-destructive dynamic PT only in explicitly scoped targets. Report passed/failed/not run; never fabricate tests or background activity.
 10. Prefer Docker/Compose or existing compatible containers for web apps, minimal non-root privileges, secrets safe, production runbook and verified commands.
-11. Enforce `fady:fady` file ownership on actual supported Unix project hosts. Discover UID/GID. Avoid root-owned project writes; no chmod 777 or blind recursive chown. Do not claim GitHub stores POSIX ownership; audit and enforce on deployment host.
+11. On first run, detect the invoking local non-root host account (or original sudo caller); record username/group and numeric UID/GID in ignored host-specific project state; reject ambiguous root-only sessions. Enforce that identity for subsequent project writes. Avoid root-owned project writes; no chmod 777 or blind recursive chown. Do not claim GitHub stores POSIX ownership; audit and enforce on deployment host.
 12. Provide tested, stdlib-only Python or POSIX scripts for idempotent init, fast bounded file/symbol index, handoff support if safe, status, and ownership audit. Fail explicitly and safely. Exclude binary/generated/.git/vendor/node_modules; guard against path traversal and writes outside the project.
 13. Do not implement a custom universal semantic dependency engine or full autonomous CI platform. Reuse language servers/graph tools when actually available.
 14. Include a sample project fixture and run automated tests of scripts, a skill validator, and scoped security checks. Correct actual failures.
@@ -43,3 +43,10 @@ Build a reusable skill directory at `.agents/skills/fady-autonomous-engineering/
 - `$fady-autonomous-engineering review security of the changed code and document what actually ran`
 
 **Perform implementation now within these safety constraints. Do not stop at an outline.**
+
+## Additional V2 requirements: source intelligence and verification
+16. Preserve or implement `scripts/code_index.py` as an offline incremental SQLite code navigation index. Use SHA-256 change detection, bounded source discovery, conservative Python AST extraction, heuristic non-Python declarations and direct-import hints; document uncertainty. Support `build`, `find`, `impact`, and `stats`. Do not claim complete semantic cross-language analysis.
+17. Preserve or implement `scripts/handoff.py` for updating one of the seven established sections without overwriting unrelated content. Prevent secrets or overly large entries.
+18. Maintain CI checks for Python compilation, skill metadata/references, and automated unit tests; require least-privilege workflow permissions.
+19. Produce a reproducible first-build versus incremental-build measurement on a throwaway fixture and report timings and changed-file counts. Never translate timings into alleged token savings.
+20. Maintain a clear backlog of capabilities that still require actual Codex runtime support, authorized deployment environment, externally installed skills, or project-specific configuration.
