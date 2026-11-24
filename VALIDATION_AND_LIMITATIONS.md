@@ -1,30 +1,35 @@
-# Validation results and outstanding operational dependencies
+# Validation results and limitations
 
-## Validation completed (2026-11-23)
-- Project initialization, ownership resolution, incremental indexing, and handoff tests: **20 passed** under a non-root test account.
-- Skill metadata/reference validation: passed.
-- Skill-creator validator: passed.
-- Code-index fixture: 240 Python source files, no external dependencies.
-  - First build: 240 changed, 0 unchanged; 0.4114 seconds.
-  - Second build: 0 changed, 240 unchanged; 0.0188 seconds.
-  - Third build (one file modified): 1 changed, 239 unchanged; 0.0171 seconds.
-- These are illustrative single-run timings on a synthetic fixture, not a robust performance benchmark. They do **not** quantify Codex context or token savings.
+## Historical report
 
-## Implemented
-- Incremental content-hash change detection; exact Python AST declarations and import collection; heuristic cross-language declarations and relative JS/TS imports.
-- Path/symbol substring lookup, limited direct-import impact suggestions, and stale-entry cleanup.
-- Idempotent project document initialization, status and file-index tools.
-- Seven-section handoff append helper, preserving existing sections.
-- GitHub Actions validation for script syntax, tests and metadata.
-- First-run host user/group detection and locally persisted UID/GID; subsequent write guards; read-only ownership audit.
+The published report dated November 23, 2026 states that 20 tests passed, skill metadata/reference validation passed, and a 240-file synthetic benchmark completed in 0.4114 seconds on first build, 0.0188 seconds unchanged, and 0.0171 seconds after one modification. Those are historical claims from the report; the absent repository implementation meant they were not independently reproducible from the published main branch.
 
-## Unfinished by design: depends on your actual environment
-- Real Codex subagent spawning, concurrency and permissions: require runtime support and explicit configuration.
-- `superpowers`, `gstack`, `graphify`, `rea`, `find-skills`, `codex-security`, UI/UX skills: verify availability and follow their actual instructions before use.
-- Full cross-language semantic or call graphs: require project-aware LSP/compiler or other suitable tool; heuristic imports are not complete.
-- Production Docker runtime, database access, secret management, test targets and authorized dynamic pentesting: require a real project and scope.
-- Host UID/GID ownership cannot be guaranteed from a Git checkout or archive. First-run init intentionally fails in an ambiguous root-only session; run as the intended non-root user on the target host and audit after deployment.
-- Remote GitHub publication: no destination repository was supplied or selected; ready-to-push package only.
+## This package reconstruction
 
-## Release caution
-Do not grant agents blanket write/execute permissions or let them run unknown scripts autonomously. Use read-only indexing and review irreversible actions. Do not interpret passing unit tests as proof of application security.
+Validation is recorded after running the commands below in this workspace. This reconstruction is based on the installed skill source and the published prompt. Results from this run are reported separately from the historical figures.
+
+```bash
+SKILL=.agents/skills/fady-autonomous-engineering
+python3 -m compileall -q "$SKILL/scripts" "$SKILL/tests"
+python3 -m unittest discover -s "$SKILL/tests" -v
+python3 "$SKILL/scripts/validate_skill.py" --root "$SKILL"
+```
+
+Current local results: **15 unit tests passed**; `compileall` passed; the skill metadata/reference validator passed. The 240-file temporary fixture measured 240 changed / 0 unchanged in **0.5218 s** on first build, 0 changed / 240 unchanged in **0.0247 s** on the second build, and 1 changed / 239 unchanged in **0.0296 s** after modifying one file. This is a single local run, not a robust benchmark; no token savings are inferred.
+
+Benchmark procedure: create a temporary tree containing 240 Python files, run `code_index.py build`, repeat without changes, modify one source file and build again. Timings are single local observations, not a robust performance benchmark.
+
+## Operational dependencies
+
+- Actual Codex support is needed for subagents, skill discovery and any interactive handoff behavior.
+- Preferred external skills must be discovered and verified before use.
+- Production containers, credentials, databases, test targets and authorized dynamic penetration testing require the target project and explicit scope.
+- UID/GID ownership cannot be guaranteed by GitHub or ZIP. Run init and audit on the intended host. The tools refuse project writes when the effective account is root.
+- The SQLite index is navigation-only. Python extraction is AST-based; other language declarations/imports are heuristic. Import impact is incomplete and not a semantic dependency graph.
+- Passing utility tests does not establish application security or production readiness.
+
+## Backlog
+
+1. Verify behavior with Codex's actual skill discovery and delegation runtime.
+2. Exercise ownership and container bind mounts on the deployment host.
+3. Add project-specific test, security and deployment checks only after confirming the application's architecture and authorization.
